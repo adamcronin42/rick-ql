@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
+const fetch = require('node-fetch')
 
 // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
@@ -27,17 +28,17 @@ const typeDefs = gql`
 
   type Character {
     id: ID!
-    name: String
-    status: String
-    species: String
-    type: String
-    gender: String
-    origin: Origin
-    location: Location
-    image: String
-    episode: [String]
-    url: String
-    created: String
+    name: String!
+    status: String!
+    species: String!
+    type: String!
+    gender: String!
+    origin: Origin!
+    location: Location!
+    image: String!
+    episode: [String!]!
+    url: String!
+    created: String!
   }
 
   type Location {
@@ -51,15 +52,17 @@ const typeDefs = gql`
   }
 
   type Query {
-    characters: [Character]
+    characters: [Character!]!
   }
 `;
 
-// Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
+const baseUrl = `https://rickandmortyapi.com/api`
+
 const resolvers = {
   Query: {
-    characters: () => books,
+    characters: () => {
+      return fetch(`${baseUrl}/character/`).then(res => res.json()).then(json => json.results);
+    },
   },
 }
 
