@@ -17,18 +17,41 @@ const books = [
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
-
   # This "Book" type can be used in other type declarations.
-  type Book {
-    title: String
-    author: String
+  type Info {
+    count: Int
+    pages: Int
+    next: String
+    prev: String
   }
 
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
+  type Character {
+    id: ID!
+    name: String
+    status: String
+    species: String
+    type: String
+    gender: String
+    origin: Origin
+    location: Location
+    image: String
+    episode: [String]
+    url: String
+    created: String
+  }
+
+  type Location {
+    name: String
+    url: String
+  }
+
+  type Origin {
+    name: String
+    url: String
+  }
+
   type Query {
-    books: [Book]
+    characters: [Character]
   }
 `;
 
@@ -36,7 +59,7 @@ const typeDefs = gql`
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books,
+    characters: () => books,
   },
 }
 
