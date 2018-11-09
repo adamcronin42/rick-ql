@@ -20,10 +20,15 @@ const books = [
 const typeDefs = gql`
   # This "Book" type can be used in other type declarations.
   type Info {
-    count: Int
-    pages: Int
-    next: String
-    prev: String
+    count: Int!
+    pages: Int!
+    next: String!
+    prev: String!
+  }
+
+  type CharacterInfo {
+    info: Info!
+    results: [Character!]!
   }
 
   type Character {
@@ -42,17 +47,18 @@ const typeDefs = gql`
   }
 
   type Location {
-    name: String
-    url: String
+    name: String!
+    url: String!
   }
 
   type Origin {
-    name: String
-    url: String
+    name: String!
+    url: String!
   }
 
   type Query {
     characters: [Character!]!
+    characterInfo: CharacterInfo!
   }
 `;
 
@@ -60,6 +66,9 @@ const baseUrl = `https://rickandmortyapi.com/api`
 
 const resolvers = {
   Query: {
+    characterInfo: () => {
+      return fetch(`${baseUrl}/character/`).then(res => res.json())
+    },
     characters: () => {
       return fetch(`${baseUrl}/character/`).then(res => res.json()).then(json => json.results);
     },
