@@ -4,7 +4,6 @@ const fetch = require('node-fetch')
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
-  # This "Book" type can be used in other type declarations.
   type Info {
     count: Int!
     pages: Int!
@@ -44,8 +43,8 @@ const typeDefs = gql`
 
   type Query {
     getAllCharacters(page: String): CharacterInfo!
-    getCharacterByID(id: ID!): Character!
-    getMultipleCharactersByID(ids: String): [Character!]!
+    getCharacterByID(id: ID!): Character
+    getMultipleCharactersByID(ids: String!): [Character!]!
   }
 `;
 
@@ -53,14 +52,33 @@ const baseUrl = `https://rickandmortyapi.com/api`
 
 const resolvers = {
   Query: {
-    getAllCharacters: (parent, { page }) => {
-      return fetch(`${baseUrl}/character/${page}`).then(res => res.json())
+    async getAllCharacters(parent, { page }) {
+      let response = await fetch(`${baseUrl}/character/${page}`);
+      let characters = await response.json();
+      // the R&M api still returns a 200 even if nothing is found, it only returns an error field
+      if(characters.error) {
+        throw new Error(characters.error);
+      }      
+      return characters;    
     },
-    getCharacterByID: (parent, { id }) => {
-      return fetch(`${baseUrl}/character/${id}`).then(res => res.json())
+    //need to add error handling: i.e. if they pass in an id that doesn't exist
+    async getCharacterByID(parent, { id }) {
+      let response = await fetch(`${baseUrl}/character/${id}`);
+      let character = await response.json();
+      // the R&M api still returns a 200 even if nothing is found, it only returns an error field
+      if(character.error) {
+        throw new Error(character.error);
+      }   
+      return character; 
     },
-    getMultipleCharactersByID: (parent, { ids }) => {
-      return fetch(`${baseUrl}/character/${ids}`).then(res => res.json())
+    async getMultipleCharactersByID(parent, { ids }) {
+      let response = await fetch(`${baseUrl}/character/${ids}`);
+      let characters = await response.json();
+      if(!characters || !characters.length) {
+        // the R&M api doesn't throw any errors, it only returns an empty array
+        throw new Error("No characters found");
+      } 
+      return characters;         
     },
   },
 }
