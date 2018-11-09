@@ -44,7 +44,7 @@ const typeDefs = gql`
 
   type Query {
     characters: [Character!]!
-    characterInfo(page: String): CharacterInfo!
+    getAllCharacters(page: String): CharacterInfo!
   }
 `;
 
@@ -52,7 +52,7 @@ const baseUrl = `https://rickandmortyapi.com/api`
 
 const resolvers = {
   Query: {
-    characterInfo: (parent, { page }) => {
+    getAllCharacters: (parent, { page }) => {
       return fetch(`${baseUrl}/character/${page}`).then(res => res.json())
     },
     characters: () => {
