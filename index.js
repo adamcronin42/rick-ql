@@ -1,20 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server')
 const fetch = require('node-fetch')
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
-  },
-  {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
-  },
-];
-
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
@@ -58,7 +44,7 @@ const typeDefs = gql`
 
   type Query {
     characters: [Character!]!
-    characterInfo: CharacterInfo!
+    characterInfo(page: String): CharacterInfo!
   }
 `;
 
@@ -66,8 +52,8 @@ const baseUrl = `https://rickandmortyapi.com/api`
 
 const resolvers = {
   Query: {
-    characterInfo: () => {
-      return fetch(`${baseUrl}/character/`).then(res => res.json())
+    characterInfo: (parent, { page }) => {
+      return fetch(`${baseUrl}/character/${page}`).then(res => res.json())
     },
     characters: () => {
       return fetch(`${baseUrl}/character/`).then(res => res.json()).then(json => json.results);
