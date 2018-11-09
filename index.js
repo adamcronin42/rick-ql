@@ -43,8 +43,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    characters: [Character!]!
     getAllCharacters(page: String): CharacterInfo!
+    getCharacterByID(id: ID!): Character
   }
 `;
 
@@ -55,8 +55,8 @@ const resolvers = {
     getAllCharacters: (parent, { page }) => {
       return fetch(`${baseUrl}/character/${page}`).then(res => res.json())
     },
-    characters: () => {
-      return fetch(`${baseUrl}/character/`).then(res => res.json()).then(json => json.results);
+    getCharacterByID: (parent, { id }) => {
+      return fetch(`${baseUrl}/character/${id}`).then(res => res.json())
     },
   },
 }
